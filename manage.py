@@ -34,7 +34,8 @@ Session(app)
 
 @app.route('/')
 def index():
-    session['name'] = 'eric'
+    # 添加一个键值对
+    session['name1'] = 'eric'
     return 'index'
 
 if __name__ == '__main__':
