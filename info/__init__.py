@@ -17,6 +17,7 @@ def create_app(config_name):
     config=config_dict.get(config_name)
     # 设置日志级别
     log_file(config.LEVEL)
+    app.config.from_object(Config)
     # app.config.from_object(Config)要在之前声明
     # 创建SQLAlchemy对象关联app
     db.init_app(app)
