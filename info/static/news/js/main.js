@@ -149,10 +149,18 @@ $(function(){
 })
 
 var imageCodeId = ""
-
+var pre_imageCodeId=""
 // TODO 生成一个图片验证码的编号，并设置页面中图片验证码img标签的src属性
 function generateImageCode() {
+    //生成一个隋懿字符串不重复的id
+    imageCodeId=generateUUID();
+    //验证码图片地址
+    image_url='/passport/image_code?cue_id='+imageCodeId+'&pre_id='+pre_imageCodeId;
+    // 将image_url设置到image标签的src属性中
+    $('.get_pic_code').attr('src',image_url)
 
+    //
+    pre_imageCodeId=imageCodeId
 }
 
 // 发送短信验证码
