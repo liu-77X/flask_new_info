@@ -1,43 +1,47 @@
-import logging
 from logging.handlers import RotatingFileHandler
-
+import logging
 import redis
-from flask import Flask
+from flask import Flask, session, config
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect
 from flask_session import Session
-from config import Config,config_dict
+from config import Config, config_dict
 
-# 初始化数据库
 db = SQLAlchemy()
+#定义redis_store
+redis_store = None
 
-# 定义全局
-redis_store=None
 def create_app(config_name):
-    '''通过传入不同的配置名进行切换不同的环境'''
-    app = Flask(__name__)
-    config=config_dict.get(config_name)
-    # 设置日志级别
+    """通过传入不同的配置名字，初始化其对应配置的应用实例"""
+    # 通过config_name获取配置类
+    config = config_dict.get(config_name)
+    #日志信息,传递日志级别
     log_file(config.LEVEL)
+
+    app = Flask(__name__)
+
     app.config.from_object(Config)
-    # app.config.from_object(Config)要在之前声明
-    # 创建SQLAlchemy对象关联app
+    # 创建SQLAlchemy对象,关联app
+    # app.config.from_object(Config)先执行于db.init_app(app)
     db.init_app(app)
-    # # 初始化redis 对象
+    # 创建redis对象
     global redis_store
-    redis_store = redis.StrictRedis(host=config.REDIS_HOST, port=config.REDIS_PORT)
+    redis_store = redis.StrictRedis(host=config.REDIS_HOST, port=config.REDIS_PORT, decode_responses=True)
+    # 初始化数据库
+    # 初始化redis 对象
     # 开启csrf保护，只做服务器验证功能，
-    CSRFProtect(app)
+    # TODO
+    # CSRFProtect(app)
     # 设置session保存指定位置
     Session(app)
-    # 注册蓝图，时，导入和注册写在一起，防止bug
+    # 注册蓝图
     from info.modules.index import index_blu
     app.register_blueprint(index_blu)
+
     from info.modules.passport import passport_blu
     app.register_blueprint(passport_blu)
     return app
-# 编写方法进行环境变换（生产，测试等）
-# 记录日志
+#记录日志信息方法
 def log_file(level):
     # 设置日志的记录等级,常见等级有: DEBUG<INFO<WARING<ERROR
     logging.basicConfig(level=level)  # 调试debug级

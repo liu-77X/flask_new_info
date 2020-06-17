@@ -1,5 +1,9 @@
-import logging
 import redis
+
+# 定义配置字典
+import logging
+
+
 class Config(object):
     """工程配置信息"""
     SECRET_KEY = "EjpNVSNQTyGi1VvWECj9TvC/+kq3oujee2kTfQUs8yCM6xX9Yjq52v54g+HVoknA"
@@ -15,23 +19,26 @@ class Config(object):
     SESSION_REDIS = redis.StrictRedis(host=REDIS_HOST, port=REDIS_PORT)  # 使用 redis 的实例
     SESSION_PERMANENT = False
     PERMANENT_SESSION_LIFETIME = 86400  # session 的有效期，单位是秒
-    # 日志级别
-    LEVEL=logging.DEBUG
-# 开发环境
+    # 设置默认日志级别
+    LEVEL = logging.DEBUG
+
+
+#开发环境配置信息
 class DevelopConfig(Config):
     pass
-# 生产环境
+
+#生产环境配置信息(线上)
 class ProductConfig(Config):
     DEBUG = False
-    LEVEL=logging.ERROR
+    LEVEL = logging.ERROR
 
-# 测试环境
+#测试环境配置信息
 class TestingConfig(Config):
-    TESTING=True
+    TESTING = True
 
-# 通过统一的额字典进行配置类的访问
-config_dict={
+#通过字典统一访问配置类
+config_dict = {
     "develop":DevelopConfig,
     "product":ProductConfig,
-    "testing":TestingConfig
+    "testing":TestingConfig,
 }

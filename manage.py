@@ -11,9 +11,5 @@ manager = Manager(app)
 Migrate(app, db)
 manager.add_command('db', MigrateCommand)
 
-# 蓝图
-@app.route('/')
-def index():
-    return "index"
 if __name__ == '__main__':
     manager.run()
