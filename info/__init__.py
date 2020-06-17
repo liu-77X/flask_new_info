@@ -11,6 +11,8 @@ from config import Config,config_dict
 # 初始化数据库
 db = SQLAlchemy()
 
+# 定义全局
+redis_store=None
 def create_app(config_name):
     '''通过传入不同的配置名进行切换不同的环境'''
     app = Flask(__name__)
@@ -22,7 +24,8 @@ def create_app(config_name):
     # 创建SQLAlchemy对象关联app
     db.init_app(app)
     # # 初始化redis 对象
-    # redis_store = redis.StrictRedis(host=Config.REDIS_HOST, port=Config.REDIS_PORT)
+    global redis_store
+    redis_store = redis.StrictRedis(host=config.REDIS_HOST, port=config.REDIS_PORT)
     # 开启csrf保护，只做服务器验证功能，
     CSRFProtect(app)
     # 设置session保存指定位置
