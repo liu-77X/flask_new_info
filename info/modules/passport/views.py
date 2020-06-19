@@ -11,53 +11,6 @@ from info.utils.response_code import RET
 from . import passport_blu
 import re
 
-# 注册功能的实现
-@passport_blu.route('/register',method=['POST'])
-def register():
-    # 获取参数
-    # 进行校验参数
-    # 通过手机号取出短信验证码
-    # 判断验证码是否过期
-    # 删除reds中的短信验证码
-    # 判断短信验证码的正确性
-    # 创建用户
-    # 设置用户属性
-    # 保存到数据库
-    # 返回响应
-    # json_data=request.data
-    # dict_data=json.loads(json_data)
-    dict_data=request.json
-    moblie=dict_data.get('moblie')
-    sms_code=dict_data.get('moblie')
-    password=dict_data.get('password')
-    if not all(moblie,sms_code,password):
-        return jsonify(errno=RET.PARAMERR,errmsg="参数不全")
-    try:
-        redis_sms_code=redis_store.get('sms_code%s'%moblie)
-    except Exception as e:
-        current_app.logger.error(e)
-        return jsonify(errno=RET.DBERR,errmsg="获取短信验证码异常")
-    if not redis_sms_code:
-        return jsonify(errno=RET.NODATA,errmsg="短信验证码过期")
-    try:
-        redis_store.delete('sms_code%s'%moblie)
-    except Exception as e:
-        current_app.logger.error(e)
-        return jsonify(errno=RET.DBERR,errmsg="删除短信验证码异常")
-    if redis_sms_code!=sms_code:
-        return jsonify(errno=RET.DATAERR,errmsg="输入验证码不正确")
-    user=User()
-    user.nick_name=moblie
-    user.password=password
-    user.mobile=moblie
-    try:
-        db.session.add(user)
-        db.session.commit()
-    except Exception as e:
-        current_app.logger.error(e)
-        db.session.rollback()
-        return jsonify(errno=RET.DBERR,errmsg="用户注册失败")
-    return jsonify(errno=RET.OK,errmsg="用户注册成功")
 
 
 
@@ -131,6 +84,7 @@ def login():
 
     #用户最后登陆时间,当前系统时间
     user.last_login = datetime.now()
+    current_app.logger.debug('登录成功')
 
     # 7.返回响应
     return jsonify(errno=RET.OK,errmsg="登陆成功")

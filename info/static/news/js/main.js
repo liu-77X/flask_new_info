@@ -104,10 +104,12 @@ $(function(){
 
     // TODO 登录表单提交
     $(".login_form_con").submit(function (e) {
+        //组织默认提交操作
         e.preventDefault()
+        //渠道用户输入内容
         var mobile = $(".login_form #mobile").val()
         var password = $(".login_form #password").val()
-
+        //判断是否为空
         if (!mobile) {
             $("#login-mobile-err").show();
             return;
@@ -154,7 +156,7 @@ $(function(){
         var mobile = $("#register_mobile").val()
         var smscode = $("#smscode").val()
         var password = $("#register_password").val()
-
+        //判断是否为空
 		if (!mobile) {
             $("#register-mobile-err").show();
             return;
