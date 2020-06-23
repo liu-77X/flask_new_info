@@ -5,6 +5,8 @@ from flask import Flask, session, config
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect
 from flask_session import Session
+from flask_wtf.csrf import generate_csrf
+
 from config import Config, config_dict
 
 db = SQLAlchemy()
@@ -31,7 +33,7 @@ def create_app(config_name):
     # 初始化redis 对象
     # 开启csrf保护，只做服务器验证功能，
     # TODO
-    # CSRFProtect(app)
+    CSRFProtect(app)
     # 设置session保存指定位置
     Session(app)
     # 注册蓝图
@@ -39,8 +41,17 @@ def create_app(config_name):
     app.register_blueprint(index_blu)
     from info.utils.common import do_index_class
     app.add_template_filter(do_index_class,"index_class")
+    from info.modules.news import news_blu
+    app.register_blueprint(news_blu)
     from info.modules.passport import passport_blu
     app.register_blueprint(passport_blu)
+    @app.after_request
+    def after_request(response):
+        # 调用生成csrf的函数
+        csrf_token=generate_csrf()
+        # 通过cookie传递给前台
+        response.set_cookie('csrf_token',csrf_token)
+        return response
     return app
 #记录日志信息方法
 def log_file(level):
